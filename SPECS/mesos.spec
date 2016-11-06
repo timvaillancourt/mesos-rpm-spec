@@ -29,8 +29,9 @@ BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-virtualenv
 BuildRequires:  subversion-devel
-BuildRequires:	systemd
 BuildRequires:  zlib-devel
+
+Requires:	systemd
 
 
 %description

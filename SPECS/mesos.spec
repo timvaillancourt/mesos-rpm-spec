@@ -1,5 +1,4 @@
 %define debug_package	%{nil}
-%define	java_home	/usr/lib/jvm/java-%{java_ver}
 %define data_dir	/var/lib/mesos
 %define run_dir		/var/run/mesos
 %define log_dir		/var/log/mesos
@@ -19,8 +18,6 @@ Prefix:		/usr
 BuildRequires:	apr-devel
 BuildRequires:  cyrus-sasl-devel
 BuildRequires:  cyrus-sasl-md5
-BuildRequires:  java-%{java_ver}-openjdk
-BuildRequires:  java-%{java_ver}-openjdk-devel
 BuildRequires:  libcurl-devel
 BuildRequires:  maven
 BuildRequires:  openssl-devel
@@ -52,8 +49,14 @@ Apache Mesos - A distributed systems kernel - Devel Package
 %build
 virtualenv venv
 source venv/bin/activate
+
 export JAVA_HOME=%{java_home}
 export JAVA=%{java_home}/bin/java
+if [ ! -e "$JAVA_HOME" ]; then
+  echo "ERROR: cannot find JAVA_HOME: $JAVA_HOME!"
+  exit 1
+fi
+
 %configure
 make %{?_smp_mflags}
 

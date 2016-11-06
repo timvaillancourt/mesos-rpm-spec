@@ -114,20 +114,47 @@ getent passwd %{mesos_user} >/dev/null || useradd --comment "Mesos Daemon User" 
 
 
 %post
+# install
+if [ $1 = 0 ]; then
+  for dir in "%{data_dir}" "%{data_dir}/master" "%{data_dir}/slave" "%{log_dir}" "%{run_dir}"; do
+    [ ! -e "$dir" ] && mkdir $dir
+  done
+  chmod 0750 %{data_dir}
+  chown -R %{mesos_user}:%{mesos_group} %{data_dir} %{log_dir} %{run_dir}
+fi
+
+# upgrade
+if [ $1 = 1 ]; then
+  for service in "mesos-master" "mesos-slave"; do
+    systemctl status $service 2>/dev/null || true
+    if [ $? = 0 ]; then
+      echo "# Restarting $service..."
+      /usr/bin/systemctl restart $service || true
+    fi
+  done
+fi
+
 /usr/bin/systemctl daemon-reload
-for dir in "%{data_dir}" "%{log_dir}/master" "%{log_dir}/slave" "%{run_dir}"; do
-  [ ! -e "$dir" ] && mkdir $dir
-done
-chmod 0750 %{data_dir}
-chown -R %{mesos_user}:%{mesos_group} %{data_dir} %{log_dir}/master %{log_dir}/slave %{run_dir}
 
 
 %preun
+# uninstall
 if [ $1 = 0 ]; then
+  echo "# Stopping/disabling mesos services..."
   for service in "mesos-slave" "mesos-master"; do
-    /usr/bin/systemctl stop $service >/dev/null 2>&1 || true
+    systemctl status $service 2>/dev/null || true
+    if [ $? = 0 ]; then
+      /usr/bin/systemctl stop $service >/dev/null 2>&1 || true
+    fi
     /usr/bin/systemctl disable $service >/dev/null 2>&1 || true
   done
+fi
+
+
+%postun
+# uninstall
+if [ $1 = 0 ]; then
+  /usr/bin/systemctl daemon-reload
 fi
 
 

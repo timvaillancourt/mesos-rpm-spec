@@ -110,13 +110,16 @@ EOF
 
 
 %pre
-getent group %{mesos_group} >/dev/null || groupadd -r %{mesos_group}
-getent passwd %{mesos_user} >/dev/null || useradd --comment "Mesos Daemon User" -r -g %{mesos_group} -s /sbin/nologin %{mesos_user}
+# install
+if [ $1 = 1 ]; then
+  getent group %{mesos_group} >/dev/null || groupadd -r %{mesos_group}
+  getent passwd %{mesos_user} >/dev/null || useradd --comment "Mesos Daemon User" -r -g %{mesos_group} -s /sbin/nologin %{mesos_user}
+fi
 
 
 %post
 # install
-if [ $1 = 0 ]; then
+if [ $1 = 1 ]; then
   for dir in "%{data_dir}" "%{data_dir}/master" "%{data_dir}/slave" "%{log_dir}" "%{run_dir}"; do
     [ ! -e "$dir" ] && mkdir $dir
   done
@@ -125,7 +128,7 @@ if [ $1 = 0 ]; then
 fi
 
 # upgrade
-if [ $1 = 1 ]; then
+if [ $1 = 2 ]; then
   for service in "mesos-master" "mesos-slave"; do
     systemctl status $service 2>/dev/null || true
     if [ $? = 0 ]; then

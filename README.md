@@ -9,7 +9,7 @@ make
 ```
 
 ### Build Dependencies
-1. 'rpmbuild' command (*install rpm-build package*)
+1. 'rpmbuild' command (*provided by 'rpm-build' package*)
 2.  The dependencies listed as 'BuildRequires:' lines in SPECS/mesos.spec.
 
 ## Contact

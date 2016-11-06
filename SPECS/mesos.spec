@@ -1,5 +1,4 @@
 %define debug_package	%{nil}
-%define java_ver	1.8.0
 %define	java_home	/usr/lib/jvm/java-%{java_ver}
 %define data_dir	/var/lib/mesos
 %define run_dir		/var/run/mesos
@@ -8,7 +7,7 @@
 %define mesos_group	mesos
 
 Name:		mesos
-Version:	1.0.1
+Version:	%{version}
 Release:	1%{?dist}
 Summary:	Apache Mesos - A distributed systems kernel
 Group:		Software/Clustering
@@ -130,7 +129,7 @@ fi
 # upgrade
 if [ $1 = 2 ]; then
   for service in "mesos-master" "mesos-slave"; do
-    systemctl status $service 2>/dev/null || true
+    /usr/bin/systemctl status $service >/dev/null 2>&1 || true
     if [ $? = 0 ]; then
       echo "# Restarting $service..."
       /usr/bin/systemctl restart $service || true
@@ -146,7 +145,7 @@ fi
 if [ $1 = 0 ]; then
   echo "# Stopping/disabling mesos services..."
   for service in "mesos-slave" "mesos-master"; do
-    systemctl status $service 2>/dev/null || true
+    /usr/bin/systemctl status $service >/dev/null 2>&1 || true
     if [ $? = 0 ]; then
       /usr/bin/systemctl stop $service >/dev/null 2>&1 || true
     fi

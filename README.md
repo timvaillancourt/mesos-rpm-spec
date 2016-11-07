@@ -5,11 +5,9 @@ RPM spec file(s) for Apache Mesos
 ```
 git clone https://github.com/timvaillancourt/mesos-rpm-spec
 cd mesos-rpm-spec
-make
-# or, for a specific mesos version:
-make MESOS_VERSION=0.28.0
+make MESOS_VERSION=1.0.1
 # or, for a specific java:
-make JAVA_HOME=/path/to/java
+make MESOS_VERSION=1.0.1 JAVA_HOME=/path/to/java
 ```
 
 ### Build Dependencies
